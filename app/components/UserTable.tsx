@@ -1,5 +1,3 @@
-'use client';
-
 import { useState, useEffect } from 'react';
 import { UserProfile, getUserProfiles, setUserProfiles } from '../../utils/storage';
 
@@ -12,11 +10,12 @@ const UserTable: React.FC<UserTableProps> = ({ setIsEdit, setEditIndex }) => {
   const [profiles, setProfiles] = useState<UserProfile[]>([]);
 
   useEffect(() => {
-    setProfiles(getUserProfiles());
+    const storedProfiles = getUserProfiles();
+    setProfiles(storedProfiles);
   }, []);
 
   const handleDelete = (index: number) => {
-    if (confirm('Are you sure want to delete?')) {
+    if (window.confirm('Are you sure want to delete?')) {
       const updatedProfiles = [...profiles];
       updatedProfiles.splice(index, 1);
       setUserProfiles(updatedProfiles);
