@@ -6,7 +6,7 @@ export async function POST(req) {
 		await connect();
 		const body = await req.json();
 		const nilaiObjs = {};
-		for (let i = 1; i <= 11; i++) {
+		for (let i = 1; i < 11; i++) {
 			const nilaiObj = {
 				kode: body[`kode-MK${i}`],
 				namaMK: body[`nama-MK${i}`],
@@ -15,16 +15,15 @@ export async function POST(req) {
 			};
 			nilaiObjs[`mk${i}`] = nilaiObj;
 		}
-		console.log(nilaiObjs);
 		const dataToCreate = {
 			nim: body.nim,
 			nama: body.nama,
 			...nilaiObjs,
 		};
 		const createdData = await NilaiPlain.create(dataToCreate);
-		console.log(createdData);
-		return Response.json({ message: 'Hello World' });
+		return Response.json({ message: 'Data Added Successfully' });
 	} catch (error) {
 		console.log(error);
+		return Response.json({ message: error }, { status: 500 });
 	}
 }

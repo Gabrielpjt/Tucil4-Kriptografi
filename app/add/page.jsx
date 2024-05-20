@@ -2,16 +2,25 @@
 
 import { useState } from 'react';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
 
 const Add = () => {
 	const [dataNilai, setDataNilai] = useState({});
-	const handleAdd = (e) => {
+	const router = useRouter();
+
+	const handleAdd = async (e) => {
 		e.preventDefault();
-		fetch('/api/nilai', {
+		const res = await fetch('/api/nilai', {
 			method: 'POST',
 			body: JSON.stringify(dataNilai),
 		});
-		console.log(dataNilai);
+		const data = await res.json();
+		console.log(data);
+		if (data.message === 'Data Added Successfully') {
+			toast('Data Nilai Berhasil Ditambah');
+			router.push('/');
+		}
 	};
 
 	return (
@@ -48,7 +57,6 @@ const Add = () => {
 						</Col>
 					</Row>
 				</Container>
-				{/* Jangan Lupa Bikin Required Lagi */}
 				{Array.from(Array(10).keys()).map((i) => (
 					<div key={i}>
 						<hr />
@@ -100,7 +108,7 @@ const Add = () => {
 									>
 										<Form.Label>Nilai MK{i + 1}</Form.Label>
 										<Form.Control
-											type='number'
+											type='text'
 											placeholder='Masukkan Nilai'
 											onChange={(e) =>
 												setDataNilai((data) => ({
@@ -123,6 +131,8 @@ const Add = () => {
 													[`SKS-MK${i + 1}`]: e.target.value,
 												}))
 											}
+											min={0}
+											max={3}
 										/>
 									</Form.Group>
 								</Col>
