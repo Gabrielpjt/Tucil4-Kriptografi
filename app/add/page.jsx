@@ -81,6 +81,7 @@ const Add = () => {
 													[`kode-MK${i + 1}`]: e.target.value,
 												}))
 											}
+											required
 										/>
 									</Form.Group>
 								</Col>
@@ -96,6 +97,7 @@ const Add = () => {
 													[`nama-MK${i + 1}`]: e.target.value,
 												}))
 											}
+											required
 										/>
 									</Form.Group>
 								</Col>
@@ -116,6 +118,7 @@ const Add = () => {
 													[`nilai-MK${i + 1}`]: e.target.value,
 												}))
 											}
+											required
 										/>
 									</Form.Group>
 								</Col>
@@ -131,6 +134,7 @@ const Add = () => {
 													[`SKS-MK${i + 1}`]: e.target.value,
 												}))
 											}
+											required
 											min={0}
 											max={3}
 										/>

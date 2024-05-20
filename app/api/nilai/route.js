@@ -27,3 +27,15 @@ export async function POST(req) {
 		return Response.json({ message: error }, { status: 500 });
 	}
 }
+
+export async function GET(req) {
+	try {
+		await connect();
+		const data = await NilaiPlain.find({});
+		console.log(data);
+		return Response.json(data);
+	} catch (error) {
+		console.log(error);
+		return Response.json({ message: error }, { status: 500 });
+	}
+}
