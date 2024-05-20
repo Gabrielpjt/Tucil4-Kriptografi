@@ -7,7 +7,7 @@ const Add = () => {
 	const [dataNilai, setDataNilai] = useState({});
 	const handleAdd = (e) => {
 		e.preventDefault();
-		fetch('/api/add', {
+		fetch('/api/nilai', {
 			method: 'POST',
 			body: JSON.stringify(dataNilai),
 		});
