@@ -1,7 +1,9 @@
 'use client';
 
+import React from 'react';
 import { useState, useEffect } from 'react';
 import { Table } from 'react-bootstrap';
+import RowTableNilai from './RowTableNilai';
 
 const TableNilai = () => {
 	const [dataNilai, setDataNilai] = useState([]);
@@ -16,7 +18,7 @@ const TableNilai = () => {
 
 	useEffect(() => {
 		async function getData() {
-			const res = await fetch('/api/nilai', { next: { revalidate: 120 } });
+			const res = await fetch('/api/nilaiplain', { next: { revalidate: 120 } });
 			const data = await res.json();
 			setDataNilai(data);
 		}
@@ -36,18 +38,7 @@ const TableNilai = () => {
 				</thead>
 				<tbody>
 					{dataNilai.map((nilai) => (
-						<tr key={nilai._id}>
-							<td>{nilai.nim}</td>
-							<td>{nilai.nama}</td>
-							{Array.from(Array(10).keys()).map((i) => (
-								<>
-									<td>{nilai[`mk${i + 1}`]['kode']}</td>
-									<td>{nilai[`mk${i + 1}`]['namaMK']}</td>
-									<td>{nilai[`mk${i + 1}`]['nilai']}</td>
-									<td>{nilai[`mk${i + 1}`]['SKS']}</td>
-								</>
-							))}
-						</tr>
+						<RowTableNilai key={nilai._id} nilai={nilai} />
 					))}
 				</tbody>
 			</Table>

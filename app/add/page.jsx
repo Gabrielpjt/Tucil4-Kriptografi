@@ -11,7 +11,7 @@ const Add = () => {
 
 	const handleAdd = async (e) => {
 		e.preventDefault();
-		const res = await fetch('/api/nilai', {
+		const res = await fetch('/api/nilaiplain', {
 			method: 'POST',
 			body: JSON.stringify(dataNilai),
 		});
