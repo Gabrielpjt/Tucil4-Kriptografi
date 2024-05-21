@@ -5,9 +5,7 @@ import { useState, useEffect } from 'react';
 import { Table } from 'react-bootstrap';
 import RowTableNilai from './RowTableNilai';
 
-const TableNilai = () => {
-	const [dataNilai, setDataNilai] = useState([]);
-
+const TableNilai = ({ dataNilai }) => {
 	const columns = ['NIM', 'Nama'];
 	for (let i = 1; i < 11; i++) {
 		columns.push(`Kode MK${i}`);
@@ -15,15 +13,6 @@ const TableNilai = () => {
 		columns.push(`Nilai MK${i}`);
 		columns.push(`SKS MK${i}`);
 	}
-
-	useEffect(() => {
-		async function getData() {
-			const res = await fetch('/api/nilaiplain', { next: { revalidate: 120 } });
-			const data = await res.json();
-			setDataNilai(data);
-		}
-		getData();
-	}, []);
 
 	// BELUM MASUKIN IPK KE TABLE
 	return (
