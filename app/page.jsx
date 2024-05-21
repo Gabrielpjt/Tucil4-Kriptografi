@@ -4,12 +4,12 @@ import TableNilai from '../components/TableNilai';
 import { useState, useEffect } from 'react';
 import { Spinner } from 'react-bootstrap';
 import InputRC4Key from '../components/InputRC4Key';
-import { encrypt, decrypt } from '../utils/modifiedRC4';
+import { encrypt, decrypt, toBase64, fromBase64 } from '../utils/modifiedRC4';
 
 export default function Home() {
 	const [dataNilai, setDataNilai] = useState([]);
 	const [kunciRC4, setKunciRC4] = useState('');
-	const [isEncrypted, setIsEncrypted] = useState(false);
+	const [isEncrypted, setIsEncrypted] = useState(null);
 	useEffect(() => {
 		async function getData() {
 			const res = await fetch('/api/nilaiplain', { next: { revalidate: 120 } });
@@ -20,31 +20,60 @@ export default function Home() {
 	}, []);
 
 	useEffect(() => {
-		if (isEncrypted) {
-			// proses RC4 ke dataNilai
-			setDataNilai((dataNilai) =>
-				dataNilai.map((nilai) => {
-					const encryptNim = encrypt(nilai.nim, kunciRC4);
-					const encryptNama = encrypt(nilai.nama, kunciRC4);
-					const encryptNilaiObj = {};
-					for (let i = 1; i < 11; i++) {
-						encryptNilaiObj[`mk${i}`] = {
-							kode: encrypt(nilai[`mk${i}`].kode, kunciRC4),
-							namaMK: encrypt(nilai[`mk${i}`].namaMK, kunciRC4),
-							nilai: encrypt(nilai[`mk${i}`].nilai, kunciRC4),
-							SKS: encrypt(nilai[`mk${i}`].SKS.toString(), kunciRC4),
+		if (isEncrypted !== null) {
+			if (isEncrypted) {
+				// proses RC4 ke dataNilai
+				setDataNilai((dataNilai) =>
+					dataNilai.map((nilai) => {
+						const encryptNim = toBase64(encrypt(nilai.nim, kunciRC4));
+						const encryptNama = toBase64(encrypt(nilai.nama, kunciRC4));
+						const encryptNilaiObj = {};
+						for (let i = 1; i < 11; i++) {
+							encryptNilaiObj[`mk${i}`] = {
+								kode: toBase64(encrypt(nilai[`mk${i}`].kode, kunciRC4)),
+								namaMK: toBase64(encrypt(nilai[`mk${i}`].namaMK, kunciRC4)),
+								nilai: toBase64(encrypt(nilai[`mk${i}`].nilai, kunciRC4)),
+								SKS: toBase64(
+									encrypt(nilai[`mk${i}`].SKS.toString(), kunciRC4)
+								),
+							};
+						}
+						return {
+							...dataNilai,
+							...encryptNilaiObj,
+							nim: encryptNim,
+							nama: encryptNama,
 						};
-					}
-					return { ...encryptNilaiObj, nim: encryptNim, nama: encryptNama };
-				})
-			);
+					})
+				);
+			} else {
+				setDataNilai((dataNilai) =>
+					dataNilai.map((nilai) => {
+						const decryptNim = decrypt(fromBase64(nilai.nim), kunciRC4);
+						const decryptNama = decrypt(fromBase64(nilai.nama), kunciRC4);
+						const decryptNilaiObj = {};
+						for (let i = 1; i < 11; i++) {
+							decryptNilaiObj[`mk${i}`] = {
+								kode: decrypt(fromBase64(nilai[`mk${i}`].kode), kunciRC4),
+								namaMK: decrypt(fromBase64(nilai[`mk${i}`].namaMK), kunciRC4),
+								nilai: decrypt(fromBase64(nilai[`mk${i}`].nilai), kunciRC4),
+								SKS: decrypt(
+									fromBase64(nilai[`mk${i}`].SKS.toString()),
+									kunciRC4
+								),
+							};
+						}
+						return {
+							...dataNilai,
+							...decryptNilaiObj,
+							nim: decryptNim,
+							nama: decryptNama,
+						};
+					})
+				);
+			}
 		}
-		// if (kunciRC4 !== '' && !isEncrypted) {
-		// 	console.log('dekripsi');
-		// }
 	}, [kunciRC4, isEncrypted]);
-
-	console.log(dataNilai[0]?.nama);
 
 	if (dataNilai.length !== 0) {
 		return (

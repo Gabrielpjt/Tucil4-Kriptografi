@@ -102,4 +102,25 @@ const decrypt = (encryptedText, keyword) => {
 	return finalDecrypted;
 };
 
-export { encrypt, decrypt };
+function base64ToBytes(base64) {
+	const binString = atob(base64);
+	return Uint8Array.from(binString, (m) => m.codePointAt(0));
+}
+
+function bytesToBase64(bytes) {
+	const binString = Array.from(bytes, (byte) =>
+		String.fromCodePoint(byte)
+	).join('');
+	return btoa(binString);
+}
+
+// Usage
+function toBase64(input) {
+	return bytesToBase64(new TextEncoder().encode(input));
+}
+
+function fromBase64(input) {
+	return new TextDecoder().decode(base64ToBytes(input));
+}
+
+export { encrypt, decrypt, toBase64, fromBase64 };
