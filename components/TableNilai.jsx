@@ -4,7 +4,7 @@ import React from 'react';
 import { Table } from 'react-bootstrap';
 import RowTableNilai from './RowTableNilai';
 
-const TableNilai = ({ dataNilai }) => {
+const TableNilai = ({ dataNilai, kunci }) => {
 	const columns = ['NIM', 'Nama'];
 	for (let i = 1; i < 11; i++) {
 		columns.push(`Kode MK${i}`);
@@ -27,7 +27,7 @@ const TableNilai = ({ dataNilai }) => {
 				</thead>
 				<tbody>
 					{dataNilai.map((nilai) => (
-						<RowTableNilai key={nilai._id} nilai={nilai} />
+						<RowTableNilai key={nilai._id} nilai={nilai} kunci={kunci} />
 					))}
 				</tbody>
 			</Table>

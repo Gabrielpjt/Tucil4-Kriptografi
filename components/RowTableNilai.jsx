@@ -2,9 +2,9 @@ import React from 'react';
 import { useState } from 'react';
 import { Button } from 'react-bootstrap';
 
-const RowTableNilai = ({ nilai }) => {
+const RowTableNilai = ({ nilai, kunci }) => {
 	const handleDownload = async (id) => {
-		const res = await fetch(`/api/downloadpdf/${id}`);
+		const res = await fetch(`/api/downloadpdf/${id}?key=${kunci}`);
 		const data = await res.json();
 		const downloadLink = `/assets/${data.fileName}`;
 
@@ -27,7 +27,11 @@ const RowTableNilai = ({ nilai }) => {
 			))}
 			<td>{nilai.ipk}</td>
 			<td>
-				<Button variant='secondary' onClick={() => handleDownload(nilai._id)}>
+				<Button
+					variant='secondary'
+					onClick={() => handleDownload(nilai._id)}
+					disabled={kunci === ''}
+				>
 					Download
 				</Button>
 			</td>

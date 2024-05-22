@@ -1,12 +1,7 @@
 import React from 'react';
 import { Container, Row, Col, InputGroup, Form, Button } from 'react-bootstrap';
 
-const InputRC4Key = ({
-	kunciRC4,
-	setKunciRC4,
-	isEncrypted,
-	setIsEncrypted,
-}) => {
+const InputRC4Key = ({ kunci, setKunci, isEncrypted, setIsEncrypted }) => {
 	return (
 		<Container>
 			<Row>
@@ -17,7 +12,7 @@ const InputRC4Key = ({
 							placeholder='Masukkan Kunci RC4 Sebelum Enkripsi'
 							aria-label='Masukkan Kunci RC4 Sebelum Enkripsi'
 							aria-describedby='desc'
-							onChange={(e) => setKunciRC4(e.target.value)}
+							onChange={(e) => setKunci(e.target.value)}
 							disabled={isEncrypted}
 						/>
 					</InputGroup>
@@ -25,7 +20,7 @@ const InputRC4Key = ({
 				<Col md='auto'>
 					<Button
 						onClick={() => setIsEncrypted((old) => !old)}
-						disabled={kunciRC4 === ''}
+						disabled={kunci === ''}
 					>
 						{isEncrypted ? 'Dekripsi' : 'Enkripsi'}
 					</Button>
