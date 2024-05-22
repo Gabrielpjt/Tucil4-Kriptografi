@@ -12,6 +12,7 @@ const TableNilai = ({ dataNilai }) => {
 		columns.push(`Nilai MK${i}`);
 		columns.push(`SKS MK${i}`);
 	}
+	columns.push('IPK');
 
 	// BELUM MASUKIN IPK KE TABLE
 	return (

@@ -25,6 +25,7 @@ const RowTableNilai = ({ nilai }) => {
 					<td>{nilai[`mk${i + 1}`]['SKS']}</td>
 				</React.Fragment>
 			))}
+			<td>{nilai.ipk}</td>
 			<td>
 				<Button variant='secondary' onClick={() => handleDownload(nilai._id)}>
 					Download

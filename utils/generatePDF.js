@@ -691,7 +691,7 @@ async function generateTranskrip(data) {
 			nilaiMK9: data.mk9.nilai,
 			nilaiMK10: data.mk10.nilai,
 			jumlahSKS: `Total jumlah SKS = ${totalSKS}`,
-			ipk: 'IPK = 3.5',
+			ipk: `IPK = ${data.ipk}`,
 			signature: 'abcdEFGH',
 		},
 	];

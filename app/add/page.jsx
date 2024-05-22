@@ -16,7 +16,6 @@ const Add = () => {
 			body: JSON.stringify(dataNilai),
 		});
 		const data = await res.json();
-		console.log(data);
 		if (data.message === 'Data Added Successfully') {
 			toast('Data Nilai Berhasil Ditambah');
 			router.push('/');

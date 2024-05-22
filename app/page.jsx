@@ -27,6 +27,9 @@ export default function Home() {
 					dataNilai.map((nilai) => {
 						const encryptNim = toBase64(encrypt(nilai.nim, kunciRC4));
 						const encryptNama = toBase64(encrypt(nilai.nama, kunciRC4));
+						const encryptIPK = toBase64(
+							encrypt(nilai.ipk.toString(), kunciRC4)
+						);
 						const encryptNilaiObj = {};
 						for (let i = 1; i < 11; i++) {
 							encryptNilaiObj[`mk${i}`] = {
@@ -43,6 +46,7 @@ export default function Home() {
 							...encryptNilaiObj,
 							nim: encryptNim,
 							nama: encryptNama,
+							ipk: encryptIPK,
 						};
 					})
 				);
@@ -51,6 +55,10 @@ export default function Home() {
 					dataNilai.map((nilai) => {
 						const decryptNim = decrypt(fromBase64(nilai.nim), kunciRC4);
 						const decryptNama = decrypt(fromBase64(nilai.nama), kunciRC4);
+						const decryptIPK = decrypt(
+							fromBase64(nilai.IPK.toString()),
+							kunciRC4
+						);
 						const decryptNilaiObj = {};
 						for (let i = 1; i < 11; i++) {
 							decryptNilaiObj[`mk${i}`] = {
@@ -68,6 +76,7 @@ export default function Home() {
 							...decryptNilaiObj,
 							nim: decryptNim,
 							nama: decryptNama,
+							ipk: decryptIPK,
 						};
 					})
 				);
