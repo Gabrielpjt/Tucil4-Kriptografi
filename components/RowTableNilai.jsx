@@ -3,7 +3,10 @@ import { Button } from 'react-bootstrap';
 
 const RowTableNilai = ({ nilai, kunci }) => {
 	const handleDownload = async (id) => {
-		const res = await fetch(`/api/downloadpdf/${id}?key=${kunci}`);
+		const res = await fetch(`/api/downloadpdf/${id}?key=${kunci}`, {
+			method: 'POST',
+			body: JSON.stringify({ kunci }),
+		});
 		const data = await res.json();
 		const downloadLink = `/assets/${data.fileName}`;
 

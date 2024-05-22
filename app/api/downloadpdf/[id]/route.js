@@ -6,11 +6,12 @@ import generateTranskrip from '../../../../utils/generatePDF';
 import { encryptAES, decryptAES } from '../../../../utils/aesCipher';
 import { decryptModifiedRC4, fromBase64 } from '../../../../utils/modifiedRC4';
 
-export async function GET(request, { params }) {
-	const kunci = request.nextUrl.searchParams.get('key');
+export async function POST(request, { params }) {
 	const id = params.id;
 	try {
 		await connect();
+		const body = await request.json();
+		const kunci = body.kunci;
 		const data = await Nilai.findById(id);
 		const decryptNilaiObj = {};
 		for (let i = 1; i < 11; i++) {
