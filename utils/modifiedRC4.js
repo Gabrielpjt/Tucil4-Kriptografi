@@ -48,7 +48,7 @@ const encryptVigenere = (text, keyword) => {
 	return encryptedText;
 };
 
-const encrypt = (inputText, keyword) => {
+const encryptModifiedRC4 = (inputText, keyword) => {
 	const rc4Encrypted = encryptRC4(inputText, keyword);
 	const finalEncrypted = encryptVigenere(rc4Encrypted, keyword);
 	return finalEncrypted;
@@ -96,7 +96,7 @@ const decryptVigenere = (text, keyword) => {
 	return decryptedText;
 };
 
-const decrypt = (encryptedText, keyword) => {
+const decryptModifiedRC4 = (encryptedText, keyword) => {
 	const rc4Decrypted = decryptVigenere(encryptedText, keyword);
 	const finalDecrypted = decryptRC4(rc4Decrypted, keyword);
 	return finalDecrypted;
@@ -123,4 +123,4 @@ function fromBase64(input) {
 	return new TextDecoder().decode(base64ToBytes(input));
 }
 
-export { encrypt, decrypt, toBase64, fromBase64 };
+export { encryptModifiedRC4, decryptModifiedRC4, toBase64, fromBase64 };

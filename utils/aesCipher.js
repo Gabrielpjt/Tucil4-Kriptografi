@@ -1,7 +1,6 @@
 import aesjs from 'aes-js';
 
 function generateKey(textKey) {
-	console.log(textKey);
 	const key = [];
 	if (textKey.length >= 16) {
 		for (let i = 0; i <= 15; i++) {
@@ -17,7 +16,6 @@ function generateKey(textKey) {
 			key.pop();
 		}
 	}
-	console.log(key);
 	return key;
 }
 

@@ -4,16 +4,54 @@ import { useState } from 'react';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
+import { encryptModifiedRC4, toBase64 } from '../../utils/modifiedRC4';
+
+const mappingNilai = {
+	A: 4,
+	AB: 3.5,
+	B: 3,
+	BC: 2.5,
+	C: 2,
+	D: 1.5,
+	E: 1,
+};
 
 const Add = () => {
 	const [dataNilai, setDataNilai] = useState({});
+	const [kunci, setKunci] = useState('');
 	const router = useRouter();
 
 	const handleAdd = async (e) => {
 		e.preventDefault();
-		const res = await fetch('/api/nilaiplain', {
+		let ipk = 0;
+		let jumlahSKS = 0;
+		for (let i = 1; i < 11; i++) {
+			ipk += mappingNilai[dataNilai[`nilai-MK${i}`]] * dataNilai[`SKS-MK${i}`];
+			jumlahSKS += Number(dataNilai[`SKS-MK${i}`]);
+		}
+		ipk = (ipk / jumlahSKS).toFixed(2);
+		const dataNilaiEncrypted = {
+			nim: toBase64(encryptModifiedRC4(dataNilai.nim, kunci)),
+			nama: toBase64(encryptModifiedRC4(dataNilai.nama, kunci)),
+			ipk: toBase64(encryptModifiedRC4(ipk, kunci)),
+		};
+		for (let i = 1; i < 11; i++) {
+			dataNilaiEncrypted[`kode-MK${i}`] = toBase64(
+				encryptModifiedRC4(dataNilai[`kode-MK${i}`], kunci)
+			);
+			dataNilaiEncrypted[`nama-MK${i}`] = toBase64(
+				encryptModifiedRC4(dataNilai[`nama-MK${i}`], kunci)
+			);
+			dataNilaiEncrypted[`nilai-MK${i}`] = toBase64(
+				encryptModifiedRC4(dataNilai[`nilai-MK${i}`], kunci)
+			);
+			dataNilaiEncrypted[`SKS-MK${i}`] = toBase64(
+				encryptModifiedRC4(dataNilai[`SKS-MK${i}`], kunci)
+			);
+		}
+		const res = await fetch('/api/nilai', {
 			method: 'POST',
-			body: JSON.stringify(dataNilai),
+			body: JSON.stringify(dataNilaiEncrypted),
 		});
 		const data = await res.json();
 		if (data.message === 'Data Added Successfully') {
@@ -108,9 +146,8 @@ const Add = () => {
 										controlId={`formNilaiMK${i + 1}`}
 									>
 										<Form.Label>Nilai MK{i + 1}</Form.Label>
-										<Form.Control
-											type='text'
-											placeholder='Masukkan Nilai'
+										<Form.Select
+											aria-label='Default select example'
 											onChange={(e) =>
 												setDataNilai((data) => ({
 													...data,
@@ -118,7 +155,16 @@ const Add = () => {
 												}))
 											}
 											required
-										/>
+										>
+											<option>Pilih Nilai</option>
+											<option value='A'>A</option>
+											<option value='AB'>AB</option>
+											<option value='B'>B</option>
+											<option value='BC'>BC</option>
+											<option value='C'>C</option>
+											<option value='D'>D</option>
+											<option value='E'>E</option>
+										</Form.Select>
 									</Form.Group>
 								</Col>
 								<Col>
@@ -135,7 +181,7 @@ const Add = () => {
 											}
 											required
 											min={0}
-											max={3}
+											max={4}
 										/>
 									</Form.Group>
 								</Col>
@@ -143,6 +189,20 @@ const Add = () => {
 						</Container>
 					</div>
 				))}
+				<hr />
+				<Container>
+					<Row>
+						<Form.Group className='mb-3' controlId='formKunci'>
+							<Form.Label>Kunci</Form.Label>
+							<Form.Control
+								type='text'
+								placeholder='Masukkan Kunci (Gunakan Kunci yang Sama untuk Setiap Entry Nilai)'
+								onChange={(e) => setKunci(e.target.value)}
+								required
+							/>
+						</Form.Group>
+					</Row>
+				</Container>
 				<hr />
 				<Container>
 					<Button variant='primary' type='submit' className='w-100 p-2'>

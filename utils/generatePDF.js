@@ -644,7 +644,7 @@ async function generateTranskrip(data) {
 	const plugins = { text, image, qrcode: barcodes.qrcode };
 	let totalSKS = 0;
 	for (let i = 1; i < 11; i++) {
-		totalSKS += data[`mk${i}`]['SKS'];
+		totalSKS += Number(data[`mk${i}`]['SKS']);
 	}
 	const inputs = [
 		{

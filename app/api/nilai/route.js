@@ -1,21 +1,11 @@
 import connect from '../../../utils/db';
-import NilaiPlain from '../../../utils/dataModel';
+import Nilai from '../../../utils/dataModel';
 
 export async function POST(req) {
-	const mappingNilai = {
-		A: 4,
-		AB: 3.5,
-		B: 3,
-		BC: 2.5,
-		D: 2,
-		E: 1.5,
-	};
 	try {
 		await connect();
 		const body = await req.json();
 		const nilaiObjs = {};
-		let ipk = 0;
-		let jumlahSKS = 0;
 		for (let i = 1; i < 11; i++) {
 			const nilaiObj = {
 				kode: body[`kode-MK${i}`],
@@ -23,20 +13,15 @@ export async function POST(req) {
 				nilai: body[`nilai-MK${i}`],
 				SKS: body[`SKS-MK${i}`],
 			};
-			ipk += mappingNilai[body[`nilai-MK${i}`]] * body[`SKS-MK${i}`];
-			jumlahSKS += Number(body[`SKS-MK${i}`]);
 			nilaiObjs[`mk${i}`] = nilaiObj;
 		}
-		console.log(ipk);
-		console.log(jumlahSKS);
-		ipk = (ipk / jumlahSKS).toFixed(2);
 		const dataToCreate = {
-			ipk,
+			ipk: body.ipk,
 			nim: body.nim,
 			nama: body.nama,
 			...nilaiObjs,
 		};
-		const createdData = await NilaiPlain.create(dataToCreate);
+		const createdData = await Nilai.create(dataToCreate);
 		return Response.json({ message: 'Data Added Successfully' });
 	} catch (error) {
 		console.log(error);
@@ -47,7 +32,7 @@ export async function POST(req) {
 export async function GET(req) {
 	try {
 		await connect();
-		const data = await NilaiPlain.find({});
+		const data = await Nilai.find({});
 		return Response.json(data);
 	} catch (error) {
 		console.log(error);

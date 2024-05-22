@@ -2,90 +2,121 @@
 
 import TableNilai from '../components/TableNilai';
 import { useState, useEffect } from 'react';
-import { Spinner } from 'react-bootstrap';
-import InputRC4Key from '../components/InputRC4Key';
-import { encrypt, decrypt, toBase64, fromBase64 } from '../utils/modifiedRC4';
+import { Spinner, Alert } from 'react-bootstrap';
+import InputKey from '../components/InputKey';
+import {
+	encryptModifiedRC4,
+	decryptModifiedRC4,
+	toBase64,
+	fromBase64,
+} from '../utils/modifiedRC4';
 
 export default function Home() {
-	const [dataNilai, setDataNilai] = useState([]);
+	const [dataNilai, setDataNilai] = useState(null);
 	const [kunci, setKunci] = useState('');
-	const [isEncrypted, setIsEncrypted] = useState(null);
+	const [isEncrypted, setIsEncrypted] = useState(true);
 	useEffect(() => {
 		async function getData() {
-			const res = await fetch('/api/nilaiplain', { next: { revalidate: 120 } });
+			const res = await fetch('/api/nilai', { next: { revalidate: 120 } });
 			const data = await res.json();
 			setDataNilai(data);
 		}
 		getData();
 	}, []);
 
-	useEffect(() => {
-		if (isEncrypted !== null) {
-			if (isEncrypted) {
-				// proses RC4 ke dataNilai
-				setDataNilai((dataNilai) =>
-					dataNilai.map((nilai) => {
-						const encryptNim = toBase64(encrypt(nilai.nim, kunci));
-						const encryptNama = toBase64(encrypt(nilai.nama, kunci));
-						const encryptIPK = toBase64(encrypt(nilai.ipk.toString(), kunci));
-						const encryptNilaiObj = {};
-						for (let i = 1; i < 11; i++) {
-							encryptNilaiObj[`mk${i}`] = {
-								kode: toBase64(encrypt(nilai[`mk${i}`].kode, kunci)),
-								namaMK: toBase64(encrypt(nilai[`mk${i}`].namaMK, kunci)),
-								nilai: toBase64(encrypt(nilai[`mk${i}`].nilai, kunci)),
-								SKS: toBase64(encrypt(nilai[`mk${i}`].SKS.toString(), kunci)),
-							};
-						}
-						return {
-							...nilai,
-							...encryptNilaiObj,
-							nim: encryptNim,
-							nama: encryptNama,
-							ipk: encryptIPK,
+	const handleEncryptDecrypt = () => {
+		if (isEncrypted) {
+			setDataNilai((dataNilai) =>
+				dataNilai.map((nilai) => {
+					const decryptNim = decryptModifiedRC4(fromBase64(nilai.nim), kunci);
+					const decryptNama = decryptModifiedRC4(fromBase64(nilai.nama), kunci);
+					const decryptIPK = decryptModifiedRC4(
+						fromBase64(nilai.ipk.toString()),
+						kunci
+					);
+					const decryptNilaiObj = {};
+					for (let i = 1; i < 11; i++) {
+						decryptNilaiObj[`mk${i}`] = {
+							kode: decryptModifiedRC4(fromBase64(nilai[`mk${i}`].kode), kunci),
+							namaMK: decryptModifiedRC4(
+								fromBase64(nilai[`mk${i}`].namaMK),
+								kunci
+							),
+							nilai: decryptModifiedRC4(
+								fromBase64(nilai[`mk${i}`].nilai),
+								kunci
+							),
+							SKS: decryptModifiedRC4(
+								fromBase64(nilai[`mk${i}`].SKS.toString()),
+								kunci
+							),
 						};
-					})
-				);
-			} else {
-				setDataNilai((dataNilai) =>
-					dataNilai.map((nilai) => {
-						const decryptNim = decrypt(fromBase64(nilai.nim), kunci);
-						const decryptNama = decrypt(fromBase64(nilai.nama), kunci);
-						const decryptIPK = decrypt(fromBase64(nilai.IPK.toString()), kunci);
-						const decryptNilaiObj = {};
-						for (let i = 1; i < 11; i++) {
-							decryptNilaiObj[`mk${i}`] = {
-								kode: decrypt(fromBase64(nilai[`mk${i}`].kode), kunci),
-								namaMK: decrypt(fromBase64(nilai[`mk${i}`].namaMK), kunci),
-								nilai: decrypt(fromBase64(nilai[`mk${i}`].nilai), kunci),
-								SKS: decrypt(fromBase64(nilai[`mk${i}`].SKS.toString()), kunci),
-							};
-						}
-						return {
-							...nilai,
-							...decryptNilaiObj,
-							nim: decryptNim,
-							nama: decryptNama,
-							ipk: decryptIPK,
+					}
+					return {
+						...nilai,
+						...decryptNilaiObj,
+						nim: decryptNim,
+						nama: decryptNama,
+						ipk: decryptIPK,
+					};
+				})
+			);
+		} else {
+			setDataNilai((dataNilai) =>
+				dataNilai.map((nilai) => {
+					const encryptNim = toBase64(encryptModifiedRC4(nilai.nim, kunci));
+					const encryptNama = toBase64(encryptModifiedRC4(nilai.nama, kunci));
+					const encryptIPK = toBase64(
+						encryptModifiedRC4(nilai.ipk.toString(), kunci)
+					);
+					const encryptNilaiObj = {};
+					for (let i = 1; i < 11; i++) {
+						encryptNilaiObj[`mk${i}`] = {
+							kode: toBase64(encryptModifiedRC4(nilai[`mk${i}`].kode, kunci)),
+							namaMK: toBase64(
+								encryptModifiedRC4(nilai[`mk${i}`].namaMK, kunci)
+							),
+							nilai: toBase64(encryptModifiedRC4(nilai[`mk${i}`].nilai, kunci)),
+							SKS: toBase64(
+								encryptModifiedRC4(nilai[`mk${i}`].SKS.toString(), kunci)
+							),
 						};
-					})
-				);
-			}
+					}
+					return {
+						...nilai,
+						...encryptNilaiObj,
+						nim: encryptNim,
+						nama: encryptNama,
+						ipk: encryptIPK,
+					};
+				})
+			);
 		}
-	}, [kunci, isEncrypted]);
+	};
 
-	if (dataNilai.length !== 0) {
-		return (
-			<>
-				<InputRC4Key
-					kunci={kunci}
-					setKunci={setKunci}
-					isEncrypted={isEncrypted}
-					setIsEncrypted={setIsEncrypted}
-				/>
-				<TableNilai dataNilai={dataNilai} kunci={kunci} />
-			</>
-		);
+	if (dataNilai !== null) {
+		if (dataNilai.length !== 0) {
+			return (
+				<>
+					<InputKey
+						kunci={kunci}
+						setKunci={setKunci}
+						isEncrypted={isEncrypted}
+						setIsEncrypted={setIsEncrypted}
+						handleEncryptDecrypt={handleEncryptDecrypt}
+					/>
+					<TableNilai dataNilai={dataNilai} kunci={kunci} />
+				</>
+			);
+		} else {
+			return (
+				<div className='flex-grow-1 d-flex justify-content-center align-items-center'>
+					<Alert className='text-center'>
+						Tidak ada nilai, tambahkan nilai baru dengan menekan tombol di atas!
+					</Alert>
+				</div>
+			);
+		}
 	} else {
 		return (
 			<div className='flex-grow-1 d-flex justify-content-center'>
