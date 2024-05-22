@@ -39,7 +39,7 @@ export default function Home() {
 							};
 						}
 						return {
-							...dataNilai,
+							...nilai,
 							...encryptNilaiObj,
 							nim: encryptNim,
 							nama: encryptNama,
@@ -64,7 +64,7 @@ export default function Home() {
 							};
 						}
 						return {
-							...dataNilai,
+							...nilai,
 							...decryptNilaiObj,
 							nim: decryptNim,
 							nama: decryptNama,

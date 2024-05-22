@@ -18,6 +18,7 @@ const InputRC4Key = ({
 							aria-label='Masukkan Kunci RC4 Sebelum Enkripsi'
 							aria-describedby='desc'
 							onChange={(e) => setKunciRC4(e.target.value)}
+							disabled={isEncrypted}
 						/>
 					</InputGroup>
 				</Col>
