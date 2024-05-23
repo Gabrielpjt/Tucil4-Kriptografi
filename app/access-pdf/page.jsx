@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Button, Form, Row, Col, InputGroup } from 'react-bootstrap';
+import { decryptAES } from '../../utils/aesCipher';
 
 const AccessPDF = () => {
 	const [file, setFile] = useState(null);
@@ -9,25 +10,10 @@ const AccessPDF = () => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		const formData = new FormData();
-		formData.append('kunci', kunci);
-		formData.append('file', file);
-		try {
-			const res = await fetch('/api/decryptPdf', {
-				method: 'POST',
-				body: formData,
-			});
-			const data = await res.json();
-
-			const downloadLink = `/assets/${data.fileName}`;
-			const link = document.createElement('a');
-			link.href = downloadLink;
-			link.setAttribute('download', '');
-			link.click();
-		} catch (error) {
-			console.error('something went wrong...');
-		}
-		console.log(file);
+		const buffer = Buffer.from(await file.arrayBuffer());
+		const decryptedPdf = decryptAES(kunci, buffer);
+		const blob = new Blob([decryptedPdf.buffer], { type: 'application/pdf' });
+		window.open(URL.createObjectURL(blob));
 	};
 
 	return (
@@ -61,7 +47,7 @@ const AccessPDF = () => {
 				<Row>
 					<Col>
 						<Button variant='primary' type='submit' className='w-100 p-2'>
-							Upload file
+							Dekripsi file
 						</Button>
 					</Col>
 				</Row>
