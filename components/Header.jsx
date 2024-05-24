@@ -18,9 +18,18 @@ const Header = () => {
 			</Link>
 
 			{!pathname.includes('add') && (
-				<Button variant='primary' onClick={() => router.push('/add')}>
-					Tambah nilai
-				</Button>
+				<div>
+					<Button
+						variant='primary'
+						onClick={() => router.push('/add')}
+						className='me-2'
+					>
+						Tambah nilai
+					</Button>
+					<Button variant='primary' onClick={() => router.push('/access-pdf')}>
+						Lihat transkrip (pdf)
+					</Button>
+				</div>
 			)}
 		</header>
 	);

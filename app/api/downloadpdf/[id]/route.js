@@ -3,7 +3,7 @@ import Nilai from '../../../../utils/dataModel';
 import fs from 'fs';
 import path from 'path';
 import generateTranskrip from '../../../../utils/generatePDF';
-import { encryptAES, decryptAES } from '../../../../utils/aesCipher';
+import { encryptAES } from '../../../../utils/aesCipher';
 import { decryptModifiedRC4, fromBase64 } from '../../../../utils/modifiedRC4';
 
 export async function POST(request, { params }) {
@@ -32,14 +32,14 @@ export async function POST(request, { params }) {
 			...decryptNilaiObj,
 		};
 		const pdf = await generateTranskrip(dataDecrypted);
-		// const encryptedPdf = encryptAES(kunci, pdf);
+		const encryptedPdf = encryptAES(kunci, pdf);
 		fs.writeFileSync(
 			path.join(
 				process.cwd(),
 				'public/assets/',
 				`transkrip_${dataDecrypted.nim}.pdf`
 			),
-			pdf
+			encryptedPdf
 		);
 		return Response.json({ fileName: `transkrip_${dataDecrypted.nim}.pdf` });
 	} catch (error) {

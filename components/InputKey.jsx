@@ -13,10 +13,10 @@ const InputKey = ({
 			<Row>
 				<Col>
 					<InputGroup className='mb-3'>
-						<InputGroup.Text id='desc'>Kunci RC4</InputGroup.Text>
+						<InputGroup.Text id='desc'>Kunci</InputGroup.Text>
 						<Form.Control
-							placeholder='Masukkan Kunci RC4 Sebelum Dekripsi'
-							aria-label='Masukkan Kunci RC4 Sebelum Dekripsi'
+							placeholder='Masukkan Kunci Sebelum Dekripsi'
+							aria-label='Masukkan Kunci Sebelum Dekripsi'
 							aria-describedby='desc'
 							onChange={(e) => setKunci(e.target.value)}
 							disabled={!isEncrypted}
