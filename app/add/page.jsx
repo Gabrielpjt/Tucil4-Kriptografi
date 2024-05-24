@@ -1,10 +1,12 @@
-'use client';
+'use client'
 
 import { useState } from 'react';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import { encryptModifiedRC4, toBase64 } from '../../utils/modifiedRC4';
+import Sha3 from '../../utils/SHA3';
+import { sha3_224 } from 'js-sha3';
 
 const mappingNilai = {
 	A: 4,
@@ -19,8 +21,14 @@ const mappingNilai = {
 const Add = () => {
 	const [dataNilai, setDataNilai] = useState({});
 	const [kunci, setKunci] = useState('');
+	const [dataString, setDataString] = useState('');
 	const router = useRouter();
 
+	const handleDataNilaiChange = (key, value) => {
+		setDataNilai((prevDataNilai) => ({ ...prevDataNilai, [key]: value }));
+		const updatedValue = typeof value === 'number' ? value.toString() : value;
+		setDataString((prevDataString) => prevDataString + updatedValue);
+	};
 	const handleAdd = async (e) => {
 		e.preventDefault();
 		let ipk = 0;
@@ -29,11 +37,14 @@ const Add = () => {
 			ipk += mappingNilai[dataNilai[`nilai-MK${i}`]] * dataNilai[`SKS-MK${i}`];
 			jumlahSKS += Number(dataNilai[`SKS-MK${i}`]);
 		}
+
 		ipk = (ipk / jumlahSKS).toFixed(2);
+		const hash224 = sha3_224(dataString);
 		const dataNilaiEncrypted = {
 			nim: toBase64(encryptModifiedRC4(dataNilai.nim, kunci)),
 			nama: toBase64(encryptModifiedRC4(dataNilai.nama, kunci)),
 			ipk: toBase64(encryptModifiedRC4(ipk, kunci)),
+			tandatangan: toBase64(sha3_224(hash224)), // Memanggil finalize pada instance SHA3
 		};
 		for (let i = 1; i < 11; i++) {
 			dataNilaiEncrypted[`kode-MK${i}`] = toBase64(
@@ -59,6 +70,7 @@ const Add = () => {
 			router.push('/');
 		}
 	};
+	
 
 	return (
 		<>
@@ -72,9 +84,7 @@ const Add = () => {
 								<Form.Control
 									type='text'
 									placeholder='Masukkan NIM'
-									onChange={(e) =>
-										setDataNilai((data) => ({ ...data, nim: e.target.value }))
-									}
+									onChange={(e) => handleDataNilaiChange('nim', e.target.value)}
 									required
 								/>
 							</Form.Group>
@@ -85,9 +95,7 @@ const Add = () => {
 								<Form.Control
 									type='text'
 									placeholder='Masukkan Nama'
-									onChange={(e) =>
-										setDataNilai((data) => ({ ...data, nama: e.target.value }))
-									}
+									onChange={(e) => handleDataNilaiChange('nama', e.target.value)}
 									required
 								/>
 							</Form.Group>
@@ -113,10 +121,7 @@ const Add = () => {
 											type='text'
 											placeholder='Masukkan Kode MK'
 											onChange={(e) =>
-												setDataNilai((data) => ({
-													...data,
-													[`kode-MK${i + 1}`]: e.target.value,
-												}))
+												handleDataNilaiChange(`kode-MK${i + 1}`, e.target.value)
 											}
 											required
 										/>
@@ -129,10 +134,7 @@ const Add = () => {
 											type='text'
 											placeholder='Masukkan Nama MK'
 											onChange={(e) =>
-												setDataNilai((data) => ({
-													...data,
-													[`nama-MK${i + 1}`]: e.target.value,
-												}))
+												handleDataNilaiChange(`nama-MK${i + 1}`, e.target.value)
 											}
 											required
 										/>
@@ -149,10 +151,7 @@ const Add = () => {
 										<Form.Select
 											aria-label='Default select example'
 											onChange={(e) =>
-												setDataNilai((data) => ({
-													...data,
-													[`nilai-MK${i + 1}`]: e.target.value,
-												}))
+												handleDataNilaiChange(`nilai-MK${i + 1}`, e.target.value)
 											}
 											required
 										>
@@ -174,10 +173,7 @@ const Add = () => {
 											type='number'
 											placeholder='Masukkan Jumlah SKS'
 											onChange={(e) =>
-												setDataNilai((data) => ({
-													...data,
-													[`SKS-MK${i + 1}`]: e.target.value,
-												}))
+												handleDataNilaiChange(`SKS-MK${i + 1}`, e.target.value)
 											}
 											required
 											min={0}

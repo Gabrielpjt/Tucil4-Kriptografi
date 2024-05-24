@@ -34,6 +34,7 @@ export default function Home() {
 						fromBase64(nilai.ipk.toString()),
 						kunci
 					);
+					const tandatangan = nilai.tandatangan
 					const decryptNilaiObj = {};
 					for (let i = 1; i < 11; i++) {
 						decryptNilaiObj[`mk${i}`] = {
@@ -58,6 +59,7 @@ export default function Home() {
 						nim: decryptNim,
 						nama: decryptNama,
 						ipk: decryptIPK,
+						tandatangan : tandatangan
 					};
 				})
 			);
@@ -69,6 +71,7 @@ export default function Home() {
 					const encryptIPK = toBase64(
 						encryptModifiedRC4(nilai.ipk.toString(), kunci)
 					);
+					const tandatangan = nilai.tandatangan
 					const encryptNilaiObj = {};
 					for (let i = 1; i < 11; i++) {
 						encryptNilaiObj[`mk${i}`] = {
@@ -88,6 +91,7 @@ export default function Home() {
 						nim: encryptNim,
 						nama: encryptNama,
 						ipk: encryptIPK,
+						tandatangan: tandatangan
 					};
 				})
 			);
