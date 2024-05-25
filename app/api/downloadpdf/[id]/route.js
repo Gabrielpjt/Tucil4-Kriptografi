@@ -30,6 +30,7 @@ export async function POST(request, { params }) {
 			nama: decryptModifiedRC4(fromBase64(data.nama), kunci),
 			ipk: decryptModifiedRC4(fromBase64(data.ipk), kunci),
 			...decryptNilaiObj,
+			tandatangan: data.tandatangan
 		};
 		const pdf = await generateTranskrip(dataDecrypted);
 		const encryptedPdf = encryptAES(kunci, pdf);

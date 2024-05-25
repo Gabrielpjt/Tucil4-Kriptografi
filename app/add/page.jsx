@@ -39,12 +39,17 @@ const Add = () => {
 		}
 
 		ipk = (ipk / jumlahSKS).toFixed(2);
-		const hash224 = sha3_224(dataString);
+		const message = dataString;
+		const options = {
+			padding: 'sha-3',      // Opsi padding: 'sha-3' atau 'keccak'
+			msgFormat: 'string',   // Format pesan: 'string' atau 'hex-bytes'
+			outFormat: 'hex'       // Format keluaran: 'hex', 'hex-b' (byte separated), 'hex-w' (word separated)
+		};
 		const dataNilaiEncrypted = {
 			nim: toBase64(encryptModifiedRC4(dataNilai.nim, kunci)),
 			nama: toBase64(encryptModifiedRC4(dataNilai.nama, kunci)),
 			ipk: toBase64(encryptModifiedRC4(ipk, kunci)),
-			tandatangan: toBase64(sha3_224(hash224)), // Memanggil finalize pada instance SHA3
+			tandatangan: toBase64(Sha3.hash224(message, options)), // Memanggil finalize pada instance SHA3
 		};
 		for (let i = 1; i < 11; i++) {
 			dataNilaiEncrypted[`kode-MK${i}`] = toBase64(

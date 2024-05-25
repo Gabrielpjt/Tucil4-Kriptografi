@@ -19,6 +19,7 @@ export async function POST(req) {
 			ipk: body.ipk,
 			nim: body.nim,
 			nama: body.nama,
+			tandatangan: body.tandatangan,
 			...nilaiObjs,
 		};
 		const createdData = await Nilai.create(dataToCreate);
