@@ -692,7 +692,7 @@ async function generateTranskrip(data) {
 			nilaiMK10: data.mk10.nilai,
 			jumlahSKS: `Total jumlah SKS = ${totalSKS}`,
 			ipk: `IPK = ${data.ipk}`,
-			signature: 'abcdEFGH',
+			signature: data.tandatangan,
 		},
 	];
 	const pdf = await generate({ template, plugins, inputs });
