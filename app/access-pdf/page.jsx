@@ -24,8 +24,8 @@ const AccessPDF = () => {
 						<InputGroup className='mb-3'>
 							<InputGroup.Text id='desc'>Kunci</InputGroup.Text>
 							<Form.Control
-								placeholder='Masukkan Kunci Sebelum Dekripsi'
-								aria-label='Masukkan Kunci Sebelum Dekripsi'
+								placeholder='Masukkan Kunci Sebelum Dekripsi (Kunci yang sama ketika enkripsi dan dekripsi tabel)'
+								aria-label='Masukkan Kunci Sebelum Dekripsi (Kunci yang sama ketika enkripsi dan dekripsi tabel)'
 								aria-describedby='desc'
 								onChange={(e) => setKunci(e.target.value)}
 							/>
