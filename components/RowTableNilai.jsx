@@ -7,6 +7,7 @@ import { toBase64 } from '../utils/modifiedRC4';
 const RowTableNilai = ({ nilai, kunci, rsaObj }) => {
 	const [isVerified, setIsVerified] = useState(null);
 	const [tandatangan, setTandatangan] = useState(() => nilai.tandatangan);
+	const [publicKey, setPublicKey] = useState(() => nilai.publicKey);
 
 	const handleTandatangan = async (id) => {
 		const nilaiString = Array.from(Array(10).keys())
@@ -32,10 +33,17 @@ const RowTableNilai = ({ nilai, kunci, rsaObj }) => {
 
 		const res = await fetch('/api/nilai', {
 			method: 'PUT',
-			body: JSON.stringify({ tandatangan: encryptedHash, id }),
+			body: JSON.stringify({
+				tandatangan: encryptedHash,
+				id,
+				e: rsaObj.getPublicKey().e.toString(),
+				n: rsaObj.getPublicKey().n.toString(),
+			}),
 		});
 		const data = await res.json();
+		console.log(data);
 		setTandatangan(data.tandatangan);
+		setPublicKey({ e: data.e, n: data.n });
 	};
 
 	const handleVerifikasi = () => {
@@ -57,7 +65,13 @@ const RowTableNilai = ({ nilai, kunci, rsaObj }) => {
 		};
 		const shaDataString = toBase64(Sha3.hash224(message, options));
 
-		const decryptedSignature = rsaObj.doDecryption(tandatangan);
+		const rsa = new RSA(3, 5); // ini ngasal p dan q nya
+		console.log(publicKey);
+		const decryptedSignature = rsa.doDecryptionWithKey(
+			tandatangan,
+			publicKey.e,
+			publicKey.n
+		);
 
 		// Bandingkan hasil dekripsi RSA dengan nilai SHA-1 dari dataString
 		setIsVerified(decryptedSignature === shaDataString);

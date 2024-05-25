@@ -45,11 +45,15 @@ export async function PUT(req) {
 	const body = await req.json();
 	const id = body.id;
 	const tandatangan = body.tandatangan;
+	const e = body.e;
+	const n = body.n;
 	try {
 		await connect();
-		const data = await Nilai.findByIdAndUpdate(id, { tandatangan });
-		console.log(data);
-		return Response.json({ tandatangan });
+		const data = await Nilai.findByIdAndUpdate(id, {
+			tandatangan,
+			publicKey: { e, n },
+		});
+		return Response.json({ tandatangan, e, n });
 	} catch (error) {
 		console.log(error);
 		return Response.json({ message: error }, { status: 500 });

@@ -69,7 +69,7 @@ class RSA {
 
 	doEncryption(plaintext) {
 		let input = plaintext.split('').map((char) => BigInt(char.charCodeAt(0)));
-		const cipherArr = input.map((char) => char ** this.e % this.n);
+		const cipherArr = input.map((char) => char ** this.d % this.n);
 		const ciphertext = String.fromCharCode(
 			...cipherArr.map((cipher) => Number(cipher))
 		);
@@ -79,7 +79,17 @@ class RSA {
 	doDecryption(ciphertext) {
 		let input = new TextDecoder().decode(this.#base64ToBytes(ciphertext));
 		input = input.split('').map((char) => BigInt(char.charCodeAt(0)));
-		const plainArr = input.map((char) => char ** this.d % this.n);
+		const plainArr = input.map((char) => char ** this.e % this.n);
+		const plaintext = String.fromCharCode(
+			...plainArr.map((plain) => Number(plain))
+		);
+		return plaintext;
+	}
+
+	doDecryptionWithKey(ciphertext, e, n) {
+		let input = new TextDecoder().decode(this.#base64ToBytes(ciphertext));
+		input = input.split('').map((char) => BigInt(char.charCodeAt(0)));
+		const plainArr = input.map((char) => char ** BigInt(e) % BigInt(n));
 		const plaintext = String.fromCharCode(
 			...plainArr.map((plain) => Number(plain))
 		);

@@ -66,6 +66,10 @@ const dataSchema = Schema({
 	},
 	ipk: String,
 	tandatangan: String,
+	publicKey: {
+		e: Number,
+		n: Number,
+	},
 });
 
 export default dataSchema;
