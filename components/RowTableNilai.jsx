@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from 'react-bootstrap';
+import Sha3 from '../utils/SHA3';
+import RSA from '../utils/RSA';
 
 const RowTableNilai = ({ nilai, kunci }) => {
+    const [isVerified, setIsVerified] = useState(false);
+
     const handleDownload = async (id) => {
         const res = await fetch(`/api/downloadpdf/${id}?key=${kunci}`, {
             method: 'POST',
@@ -14,7 +18,20 @@ const RowTableNilai = ({ nilai, kunci }) => {
         link.href = downloadLink;
         link.setAttribute('download', '');
         link.click();
+
+        const dataString = Array.from(Array(10).keys()).map(i =>
+            `${nilai[`mk${i + 1}`]['kode']}${nilai[`mk${i + 1}`]['namaMK']}${nilai[`mk${i + 1}`]['nilai']}${nilai[`mk${i + 1}`]['SKS']}`
+        ).join('');
+
+        // Hitung nilai SHA-1 dari dataString
+        const shaDataString = Sha3(dataString);
+        const rsa = new RSA(17, 19);
+        const decryptedSignature = rsa.doDecryption(nilai.tandatangan);
+
+        // Bandingkan hasil dekripsi RSA dengan nilai SHA-1 dari dataString
+        setIsVerified(decryptedSignature === shaDataString);
     };
+
     return (
         <tr key={nilai._id}>
             <td>{nilai.nim}</td>
@@ -29,6 +46,7 @@ const RowTableNilai = ({ nilai, kunci }) => {
             ))}
             <td>{nilai.ipk}</td>
             <td>{nilai.tandatangan ? nilai.tandatangan.substr(0, 5) : ''}</td> {/* Memeriksa apakah tandatangan ada sebelum mencoba mengaksesnya */}
+            <td>{isVerified.toString()}</td>
             <td>
                 <Button
                     variant='secondary'

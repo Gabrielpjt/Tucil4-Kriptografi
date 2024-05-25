@@ -14,6 +14,7 @@ const TableNilai = ({ dataNilai, kunci}) => {
 	}
 	columns.push('IPK');
 	columns.push('Tanda Tangan Digital')
+	columns.push('Verifikasi')
 
 	// BELUM MASUKIN IPK KE TABLE
 	return (

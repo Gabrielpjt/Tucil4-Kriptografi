@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import { encryptModifiedRC4, toBase64 } from '../../utils/modifiedRC4';
 import Sha3 from '../../utils/SHA3';
-import { sha3_224 } from 'js-sha3';
+import RSA from '../../utils/RSA';
 
 const mappingNilai = {
 	A: 4,
@@ -29,6 +29,7 @@ const Add = () => {
 		const updatedValue = typeof value === 'number' ? value.toString() : value;
 		setDataString((prevDataString) => prevDataString + updatedValue);
 	};
+
 	const handleAdd = async (e) => {
 		e.preventDefault();
 		let ipk = 0;
@@ -45,11 +46,21 @@ const Add = () => {
 			msgFormat: 'string',   // Format pesan: 'string' atau 'hex-bytes'
 			outFormat: 'hex'       // Format keluaran: 'hex', 'hex-b' (byte separated), 'hex-w' (word separated)
 		};
+		const hashresult = toBase64(Sha3.hash224(message, options));
+		
+		// Generate Key Pair
+		const rsa = new RSA(17, 19); // Contoh inisialisasi dengan p = 17 dan q = 19, seharusnya diganti dengan nilai p dan q yang dihasilkan dari generatePAndQ
+		const publicKey = rsa.getPublicKey();
+		const privateKey = rsa.getPrivateKey();
+
+		// Enkripsi hash result dengan kunci privat RSA
+		const encryptedHash = rsa.doEncryption(hashresult);
+
 		const dataNilaiEncrypted = {
 			nim: toBase64(encryptModifiedRC4(dataNilai.nim, kunci)),
 			nama: toBase64(encryptModifiedRC4(dataNilai.nama, kunci)),
 			ipk: toBase64(encryptModifiedRC4(ipk, kunci)),
-			tandatangan: toBase64(Sha3.hash224(message, options)), // Memanggil finalize pada instance SHA3
+			tandatangan: toBase64(encryptedHash), // Memanggil finalize pada instance SHA3
 		};
 		for (let i = 1; i < 11; i++) {
 			dataNilaiEncrypted[`kode-MK${i}`] = toBase64(
