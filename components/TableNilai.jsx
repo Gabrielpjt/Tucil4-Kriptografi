@@ -4,7 +4,7 @@ import React from 'react';
 import { Table } from 'react-bootstrap';
 import RowTableNilai from './RowTableNilai';
 
-const TableNilai = ({ dataNilai, kunci}) => {
+const TableNilai = ({ dataNilai, kunci, rsaObj }) => {
 	const columns = ['NIM', 'Nama'];
 	for (let i = 1; i < 11; i++) {
 		columns.push(`Kode MK${i}`);
@@ -13,8 +13,8 @@ const TableNilai = ({ dataNilai, kunci}) => {
 		columns.push(`SKS MK${i}`);
 	}
 	columns.push('IPK');
-	columns.push('Tanda Tangan Digital')
-	columns.push('Verifikasi')
+	columns.push('Tanda Tangan Digital');
+	columns.push('Verifikasi');
 
 	// BELUM MASUKIN IPK KE TABLE
 	return (
@@ -29,7 +29,12 @@ const TableNilai = ({ dataNilai, kunci}) => {
 				</thead>
 				<tbody>
 					{dataNilai.map((nilai) => (
-						<RowTableNilai key={nilai._id} nilai={nilai} kunci={kunci}/>
+						<RowTableNilai
+							key={nilai._id}
+							nilai={nilai}
+							kunci={kunci}
+							rsaObj={rsaObj}
+						/>
 					))}
 				</tbody>
 			</Table>

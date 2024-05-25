@@ -40,3 +40,18 @@ export async function GET(req) {
 		return Response.json({ message: error }, { status: 500 });
 	}
 }
+
+export async function PUT(req) {
+	const body = await req.json();
+	const id = body.id;
+	const tandatangan = body.tandatangan;
+	try {
+		await connect();
+		const data = await Nilai.findByIdAndUpdate(id, { tandatangan });
+		console.log(data);
+		return Response.json({ tandatangan });
+	} catch (error) {
+		console.log(error);
+		return Response.json({ message: error }, { status: 500 });
+	}
+}

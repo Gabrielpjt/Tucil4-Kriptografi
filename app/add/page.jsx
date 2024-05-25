@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { useState } from 'react';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
@@ -40,27 +40,10 @@ const Add = () => {
 		}
 
 		ipk = (ipk / jumlahSKS).toFixed(2);
-		const message = dataString;
-		const options = {
-			padding: 'sha-3',      // Opsi padding: 'sha-3' atau 'keccak'
-			msgFormat: 'string',   // Format pesan: 'string' atau 'hex-bytes'
-			outFormat: 'hex'       // Format keluaran: 'hex', 'hex-b' (byte separated), 'hex-w' (word separated)
-		};
-		const hashresult = toBase64(Sha3.hash224(message, options));
-		
-		// Generate Key Pair
-		const rsa = new RSA(17, 19); // Contoh inisialisasi dengan p = 17 dan q = 19, seharusnya diganti dengan nilai p dan q yang dihasilkan dari generatePAndQ
-		const publicKey = rsa.getPublicKey();
-		const privateKey = rsa.getPrivateKey();
-
-		// Enkripsi hash result dengan kunci privat RSA
-		const encryptedHash = rsa.doEncryption(hashresult);
-
 		const dataNilaiEncrypted = {
 			nim: toBase64(encryptModifiedRC4(dataNilai.nim, kunci)),
 			nama: toBase64(encryptModifiedRC4(dataNilai.nama, kunci)),
 			ipk: toBase64(encryptModifiedRC4(ipk, kunci)),
-			tandatangan: toBase64(encryptedHash), // Memanggil finalize pada instance SHA3
 		};
 		for (let i = 1; i < 11; i++) {
 			dataNilaiEncrypted[`kode-MK${i}`] = toBase64(
@@ -86,7 +69,6 @@ const Add = () => {
 			router.push('/');
 		}
 	};
-	
 
 	return (
 		<>
@@ -111,7 +93,9 @@ const Add = () => {
 								<Form.Control
 									type='text'
 									placeholder='Masukkan Nama'
-									onChange={(e) => handleDataNilaiChange('nama', e.target.value)}
+									onChange={(e) =>
+										handleDataNilaiChange('nama', e.target.value)
+									}
 									required
 								/>
 							</Form.Group>
@@ -167,7 +151,10 @@ const Add = () => {
 										<Form.Select
 											aria-label='Default select example'
 											onChange={(e) =>
-												handleDataNilaiChange(`nilai-MK${i + 1}`, e.target.value)
+												handleDataNilaiChange(
+													`nilai-MK${i + 1}`,
+													e.target.value
+												)
 											}
 											required
 										>

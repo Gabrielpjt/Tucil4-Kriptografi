@@ -628,7 +628,7 @@ async function generateTranskrip(data) {
 						x: 12.47,
 						y: 185.22,
 					},
-					width: 113.23,
+					width: 300.23,
 					height: 6.12,
 					fontSize: 10,
 					fontName: 'Roboto',

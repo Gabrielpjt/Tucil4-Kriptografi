@@ -2,7 +2,7 @@
 
 import TableNilai from '../components/TableNilai';
 import { useState, useEffect } from 'react';
-import { Spinner, Alert } from 'react-bootstrap';
+import { Spinner, Alert, Container, Row, Col, Button } from 'react-bootstrap';
 import InputKey from '../components/InputKey';
 import {
 	encryptModifiedRC4,
@@ -10,11 +10,14 @@ import {
 	toBase64,
 	fromBase64,
 } from '../utils/modifiedRC4';
+import RSA from '../utils/RSA';
 
 export default function Home() {
 	const [dataNilai, setDataNilai] = useState(null);
 	const [kunci, setKunci] = useState('');
 	const [isEncrypted, setIsEncrypted] = useState(true);
+	const [rsaObj, setRsaObj] = useState(null);
+
 	useEffect(() => {
 		async function getData() {
 			const res = await fetch('/api/nilai', { next: { revalidate: 120 } });
@@ -34,7 +37,7 @@ export default function Home() {
 						fromBase64(nilai.ipk.toString()),
 						kunci
 					);
-					const tandatangan = nilai.tandatangan
+					const tandatangan = nilai.tandatangan;
 					const decryptNilaiObj = {};
 					for (let i = 1; i < 11; i++) {
 						decryptNilaiObj[`mk${i}`] = {
@@ -59,7 +62,7 @@ export default function Home() {
 						nim: decryptNim,
 						nama: decryptNama,
 						ipk: decryptIPK,
-						tandatangan : tandatangan
+						tandatangan: tandatangan,
 					};
 				})
 			);
@@ -71,7 +74,7 @@ export default function Home() {
 					const encryptIPK = toBase64(
 						encryptModifiedRC4(nilai.ipk.toString(), kunci)
 					);
-					const tandatangan = nilai.tandatangan
+					const tandatangan = nilai.tandatangan;
 					const encryptNilaiObj = {};
 					for (let i = 1; i < 11; i++) {
 						encryptNilaiObj[`mk${i}`] = {
@@ -91,11 +94,18 @@ export default function Home() {
 						nim: encryptNim,
 						nama: encryptNama,
 						ipk: encryptIPK,
-						tandatangan: tandatangan
+						tandatangan: tandatangan,
 					};
 				})
 			);
 		}
+	};
+
+	const handleGenerateKey = () => {
+		const { p, q } = RSA.generatePAndQ();
+		const rsa = new RSA(p, q);
+		console.log(rsa.getPublicKey());
+		setRsaObj(rsa);
 	};
 
 	if (dataNilai !== null) {
@@ -109,7 +119,25 @@ export default function Home() {
 						setIsEncrypted={setIsEncrypted}
 						handleEncryptDecrypt={handleEncryptDecrypt}
 					/>
-					<TableNilai dataNilai={dataNilai} kunci={kunci} />
+					<div className='d-flex align-items-center justify-content-center mb-3'>
+						{rsaObj === null ? (
+							<Button onClick={handleGenerateKey}>
+								Generate Private dan Public Key
+							</Button>
+						) : (
+							<>
+								<span className='me-3'>
+									Public key: ({rsaObj.getPublicKey().e.toString()},{' '}
+									{rsaObj.getPublicKey().n.toString()})
+								</span>
+								<span>
+									Private key: ({rsaObj.getPrivateKey().d.toString()},{' '}
+									{rsaObj.getPrivateKey().n.toString()})
+								</span>
+							</>
+						)}
+					</div>
+					<TableNilai dataNilai={dataNilai} kunci={kunci} rsaObj={rsaObj} />
 				</>
 			);
 		} else {
